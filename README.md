@@ -85,3 +85,11 @@ Open any scenario and select **Industry response**. The cross-tool section appea
 ## Simulator time zone
 
 The synthetic scenario timeline is displayed as Central Time for interview practice. The simulator uses time-only scenario values, so these are treated as local Central wall-clock times rather than converted from UTC. For real incidents, preserve the original timestamp and timezone, then normalize timestamps consistently for correlation. Central Time observes CST (UTC−06:00) in winter and CDT (UTC−05:00) during daylight saving time; the IANA zone is America/Chicago.
+
+
+## Structured entity-event evidence
+
+- Each evidence timeline event includes structured fields for **host name, user, parent process, child process, file hash, EDR action, and IP/domain**, alongside source, entity, event, observation, and analyst decision.
+- Existing observations are parsed only where a value is explicitly present. Missing values remain blank rather than being invented. Analysts may edit the structured fields in the expanded **Entity event fields** panel.
+- Decision is the existing analyst disposition: Relevant, Benign, or Unknown. It is saved per scenario in browser-local storage and included in the JSON case report.
+- The event fields are simulated training records, not live EDR telemetry. Validate field values against source logs before operational use.
