@@ -127,7 +127,7 @@ function exportReport(){
   lab:"Cyber Incident Response Simulator",
   scenario:{id:current.id,title:current.title,domain:current.category,initial_priority:current.priority,response_plan:current.response_plan},
   exported_at:new Date().toISOString(),
-  evidence_dispositions:current.evidence.map((e,i)=>({time_utc:e[0],source:e[1],entity:e[2],event:e[3],observation:e[4],disposition:dispositions[current.id+":"+i]||"unknown"})),
+  evidence_dispositions:current.evidence.map((e,i)=>({time_central:e[0],source:e[1],entity:e[2],event:e[3],observation:e[4],disposition:dispositions[current.id+":"+i]||"unknown"})),
   worksheet:r,
   note:"Synthetic training material. Validate against the source playbook before using as operational guidance."
  };
