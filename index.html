@@ -38,11 +38,11 @@
       <ul id="missionList"></ul>
       <div class="callout"><strong>Operating rule</strong><p>Contain active harm under approved authority while collecting evidence in parallel. Verify existing controls before repeating them.</p></div></article>
       <article class="panel"><div class="panel-title"><div><p class="eyebrow">CASE METADATA</p><h3>Initial assessment</h3></div></div>
-      <dl class="metadata"><dt>Response lead</dt><dd id="lead"></dd><dt>Initial priority</dt><dd id="priorityText"></dd><dt>Evidence handling</dt><dd>Preserve original records, record UTC, retain IDs, document gaps.</dd><dt>Environment</dt><dd>Simulated, isolated, no production actions.</dd></dl></article>
+      <dl class="metadata"><dt>Response lead</dt><dd id="lead"></dd><dt>Initial priority</dt><dd id="priorityText"></dd><dt>Evidence handling</dt><dd>Scenario timeline uses Central Time (America/Chicago). Preserve source timestamps and timezone when recording real evidence.</dd><dt>Environment</dt><dd>Simulated, isolated, no production actions.</dd></dl></article>
     </div>
     <article class="panel evidence-panel"><div class="panel-title"><div><p class="eyebrow">EVIDENCE TIMELINE</p><h3>Review the observations</h3></div><span id="eventCount" class="count">8 events</span></div>
       <p class="muted">Do not assume every event is malicious. Validate identity, scope, approved changes, impact, and what the telemetry does not prove.</p>
-      <div class="table-wrap"><table><thead><tr><th>UTC</th><th>Source</th><th>Entity</th><th>Event</th><th>Observation</th><th>Disposition</th></tr></thead><tbody id="evidenceRows"></tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>Time (Central)</th><th>Source</th><th>Entity</th><th>Event</th><th>Observation</th><th>Disposition</th></tr></thead><tbody id="evidenceRows"></tbody></table></div>
       <p id="sourceNote" class="source-note"></p>
     </article>
   </section>
