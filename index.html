@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cyber Incident Response Lab</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><div class="mark">IR</div><div><p class="eyebrow">PORTFOLIO LAB / 2026–2027</p><h1>Cyber Incident Response Simulator</h1><p class="sub">Practice the evidence. Defend the decision. Prove the recovery.</p></div></div>
+  <div class="top-right"><span class="local-tag">LOCAL TRAINING ENVIRONMENT</span><button id="exportBtn" class="secondary">Export case report</button></div>
+</header>
+<main>
+<section class="stats">
+  <div class="stat"><span class="stat-label">SCENARIOS</span><strong id="scenarioCount">60</strong><small>20 domains · 3 variants each</small></div>
+  <div class="stat"><span class="stat-label">ACTIVE CASE</span><strong id="activeCase">01A</strong><small id="caseDomain">Phishing and BEC</small></div>
+  <div class="stat"><span class="stat-label">WORKSHEET STATUS</span><strong id="savedStatus">In progress</strong><small>Saved in this browser</small></div>
+</section>
+<div class="layout">
+<aside class="sidebar">
+  <div class="section-heading"><h2>Scenario library</h2><span id="visibleCount">60</span></div>
+  <input id="search" type="search" placeholder="Search scenario, domain, ID…">
+  <select id="domainFilter"><option value="">All domains</option></select>
+  <div id="scenarioList" class="scenario-list"></div>
+  <p class="hint">Training only. Evidence and actions are simulated. No real systems are connected.</p>
+</aside>
+<section class="workspace">
+  <div class="case-head">
+    <div><p class="eyebrow" id="caseEyebrow">SCENARIO 01A</p><h2 id="caseTitle">Invoice phishing followed by session reuse</h2><p id="caseDescription"></p></div>
+    <div class="priority-pill" id="priorityPill">P1</div>
+  </div>
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="brief">Brief & evidence</button><button class="tab" data-tab="response">Response worksheet</button><button class="tab" data-tab="review">Interviewer review</button>
+  </div>
+  <section class="tab-panel active" id="panel-brief">
+    <div class="two-col">
+      <article class="panel"><div class="panel-title"><div><p class="eyebrow">MISSION</p><h3>What you need to establish</h3></div><span class="icon">◎</span></div>
+      <ul id="missionList"></ul>
+      <div class="callout"><strong>Operating rule</strong><p>Contain active harm under approved authority while collecting evidence in parallel. Verify existing controls before repeating them.</p></div></article>
+      <article class="panel"><div class="panel-title"><div><p class="eyebrow">CASE METADATA</p><h3>Initial assessment</h3></div></div>
+      <dl class="metadata"><dt>Response lead</dt><dd id="lead"></dd><dt>Initial priority</dt><dd id="priorityText"></dd><dt>Evidence handling</dt><dd>Preserve original records, record UTC, retain IDs, document gaps.</dd><dt>Environment</dt><dd>Simulated, isolated, no production actions.</dd></dl></article>
+    </div>
+    <article class="panel evidence-panel"><div class="panel-title"><div><p class="eyebrow">EVIDENCE TIMELINE</p><h3>Review the observations</h3></div><span id="eventCount" class="count">8 events</span></div>
+      <p class="muted">Do not assume every event is malicious. Validate identity, scope, approved changes, impact, and what the telemetry does not prove.</p>
+      <div class="table-wrap"><table><thead><tr><th>UTC</th><th>Source</th><th>Entity</th><th>Event</th><th>Observation</th><th>Disposition</th></tr></thead><tbody id="evidenceRows"></tbody></table></div>
+      <p id="sourceNote" class="source-note"></p>
+    </article>
+  </section>
+  <section class="tab-panel" id="panel-response">
+    <div class="phase-banner"><span class="phase-number">01</span><div><h3>Build your incident record</h3><p>Write as if another responder must take over your case without a verbal handoff.</p></div></div>
+    <div class="worksheet-grid">
+      <label>Incident summary<textarea data-field="summary" rows="4" placeholder="What happened, what is confirmed, and what remains unknown?"></textarea></label>
+      <label>Initial severity and rationale<select data-field="severity"><option value="">Select severity</option><option>P1 · Critical</option><option>P2 · High</option><option>P3 · Moderate</option><option>P4 · Low</option></select></label>
+      <label>Known affected assets and identities<textarea data-field="assets" rows="3" placeholder="List users, hosts, services, tokens, data, transactions."></textarea></label>
+      <label>Evidence correlations<textarea data-field="correlations" rows="4" placeholder="Join events by request ID, session, host, key, timestamp, or transaction."></textarea></label>
+      <label>Containment actions and authority<textarea data-field="containment" rows="4" placeholder="State the action, owner, scope, authority, verification, and rollback condition."></textarea></label>
+      <label>Evidence gaps and next collection<textarea data-field="gaps" rows="3" placeholder="What log, owner, provider evidence, or business confirmation is missing?"></textarea></label>
+      <label>Eradication and recovery proof<textarea data-field="recovery" rows="4" placeholder="What test proves the old access fails and legitimate service works?"></textarea></label>
+      <label>Executive update<textarea data-field="update" rows="3" placeholder="Business impact, confirmed facts, action underway, next update time."></textarea></label>
+    </div>
+    <div class="phase-checks">
+      <h3>Response phase gate</h3><p class="muted">Check each item only after you have recorded evidence or a reason it does not apply.</p>
+      <div id="checklist"></div>
+    </div>
+    <div class="button-row"><button id="saveBtn">Save worksheet</button><button id="clearBtn" class="secondary">Clear this scenario</button><span id="saveMessage" aria-live="polite"></span></div>
+  </section>
+  <section class="tab-panel" id="panel-review">
+    <div class="review-intro"><p class="eyebrow">INTERVIEWER MODE</p><h3>Explain your decisions, not only your tools.</h3><p>Use this rubric after completing the worksheet. Be explicit about what the evidence proves, what remains a hypothesis, and how you verify containment.</p></div>
+    <div class="rubric" id="rubric"></div>
+    <article class="panel"><h3>Suggested interview walkthrough</h3><ol>
+      <li>State the incident hypothesis and initial priority. Separate confirmed facts from assumptions.</li>
+      <li>Walk through the timeline and explain how you correlated records.</li>
+      <li>Identify the highest-risk business impact and the first containment decision.</li>
+      <li>Explain the trade-off, decision authority, and rollback condition.</li>
+      <li>Show a resource-level verification test, not merely a console status.</li>
+      <li>Describe the evidence gap, residual risk, and one detection or control improvement.</li>
+    </ol></article>
+    <article class="panel"><h3>Evidence quality self-check</h3><div id="qualityChecks"></div></article>
+  </section>
+</section>
+</div>
+</main>
+<footer><span>Cyber Incident Response Lab</span><span>Portfolio practice · Synthetic data · No production connectivity</span></footer>
+<script src="app.js"></script>
+</body></html>

@@ -1,0 +1,3983 @@
+{
+  "playbook": "The Evolving Cyber Threat Playbook 2026-2027",
+  "scenarios": [
+    {
+      "id": "01A",
+      "category": "Phishing and business email compromise",
+      "title": "Invoice phishing followed by session reuse",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Invoice phishing followed by session reuse. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Email",
+          "fin01",
+          "message_delivered",
+          "m001 sender=invoice@billing.example"
+        ],
+        [
+          "08:01",
+          "Proxy",
+          "LT-FIN01",
+          "url_open",
+          "host=signin-review.example message=m001"
+        ],
+        [
+          "08:02",
+          "Identity",
+          "fin01",
+          "interactive_login",
+          "session=s101 ip=192.0.2.11 mfa=completed"
+        ],
+        [
+          "08:03",
+          "Identity",
+          "fin01",
+          "session_reuse",
+          "session=s101 ip=198.51.100.21 device=unknown"
+        ],
+        [
+          "08:04",
+          "Mailbox",
+          "fin01",
+          "mail_read",
+          "session=s101 folders=Invoices count=74"
+        ],
+        [
+          "08:05",
+          "Mailbox",
+          "fin01",
+          "forward_rule_created",
+          "rule=r01 target=archive@outside.example"
+        ],
+        [
+          "08:06",
+          "Change",
+          "mail-admin",
+          "approved_change",
+          "ticket=CHG001 target=shared-payables rule=retention"
+        ],
+        [
+          "08:07",
+          "Identity",
+          "fin01",
+          "user_denial",
+          "user denies unknown device report=IR001"
+        ]
+      ],
+      "source_note": "Evidence is reproduced from the uploaded playbook."
+    },
+    {
+      "id": "01B",
+      "category": "Phishing and business email compromise",
+      "title": "Supplier bank details changed in a real email thread",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Supplier bank details changed in a real email thread. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Email",
+          "ap01",
+          "message_received",
+          "thread=t202 sender=accounts@supplier.example auth=pass"
+        ],
+        [
+          "08:01",
+          "ERP",
+          "vendor-17",
+          "bank_changed",
+          "old=SIM-001 new=SIM-992 actor=ap01"
+        ],
+        [
+          "08:02",
+          "Finance",
+          "pay-202",
+          "payment_queued",
+          "amount_MYR=185000 beneficiary=SIM-992 status=unreleased"
+        ],
+        [
+          "08:03",
+          "Supplier",
+          "vendor-17",
+          "callback_denial",
+          "known_number=yes denies bank change"
+        ],
+        [
+          "08:04",
+          "Email",
+          "ap01",
+          "reply_to_changed",
+          "thread=t202 reply_to=accounts@supplier-pay.example"
+        ],
+        [
+          "08:05",
+          "ERP",
+          "vendor-05",
+          "approved_change",
+          "ticket=CHG002 dual approval=yes callback=yes"
+        ],
+        [
+          "08:07",
+          "Finance",
+          "pay-202",
+          "payment_hold",
+          "release_prevented=yes"
+        ]
+      ],
+      "source_note": "Evidence is reproduced from the uploaded playbook."
+    },
+    {
+      "id": "01C",
+      "category": "Phishing and business email compromise",
+      "title": "Shared document lure leading to endpoint execution",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Shared document lure leading to endpoint execution. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Email",
+          "ops03",
+          "message_delivered",
+          "message=m303 sender=case-share@partner.example"
+        ],
+        [
+          "08:01",
+          "Proxy",
+          "LT-OPS03",
+          "file_download",
+          "file=Review.zip host=files-review.example"
+        ],
+        [
+          "08:02",
+          "EDR",
+          "LT-OPS03",
+          "archive_extract",
+          "child=Review.pdf.lnk"
+        ],
+        [
+          "08:03",
+          "EDR",
+          "LT-OPS03",
+          "script_started",
+          "parent=explorer.exe image=powershell.exe simulated non-executable"
+        ],
+        [
+          "08:04",
+          "DNS",
+          "LT-OPS03",
+          "dns_query",
+          "query=case-sync.example answer=203.0.113.33"
+        ],
+        [
+          "08:05",
+          "Firewall",
+          "LT-OPS03",
+          "egress_allowed",
+          "dst=203.0.113.33 port=443 bytes_out=2048"
+        ],
+        [
+          "08:07",
+          "EDR",
+          "LT-OPS03",
+          "task_created",
+          "name=CaseReviewUpdate actor=ops03"
+        ]
+      ],
+      "source_note": "Evidence is reproduced from the uploaded playbook."
+    },
+    {
+      "id": "02A",
+      "category": "Ransomware and data extortion",
+      "title": "Encryption detected on a shared file service",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Encryption detected on a shared file service. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "EDR",
+          "LT-ENG04",
+          "file_write_burst",
+          "user=eng04 writes=1840 interval_seconds=60"
+        ],
+        [
+          "08:01",
+          "SMB",
+          "FS01",
+          "remote_write",
+          "client=LT-ENG04 share=Projects files=612"
+        ],
+        [
+          "08:02",
+          "EDR",
+          "LT-ENG04",
+          "extension_changed",
+          "extension=.locked count=608"
+        ],
+        [
+          "08:03",
+          "EDR",
+          "LT-ENG04",
+          "recovery_tamper",
+          "operation=shadow_copy_delete result=success"
+        ],
+        [
+          "08:04",
+          "Backup",
+          "FS01",
+          "backup_status",
+          "immutable_copy=available last_test=2026-09-01"
+        ],
+        [
+          "08:05",
+          "Change",
+          "FS02",
+          "approved_bulk_rename",
+          "ticket=CHG004 files=400 actor=svc-migration"
+        ],
+        [
+          "08:06",
+          "SMB",
+          "FS01",
+          "write_denied",
+          "client=LT-ENG04 after_isolation=yes"
+        ],
+        [
+          "08:07",
+          "EDR",
+          "LT-ENG04",
+          "ransom_note_written",
+          "path=Projects/RESTORE.txt"
+        ]
+      ],
+      "source_note": "Evidence is reproduced from the uploaded playbook."
+    },
+    {
+      "id": "02B",
+      "category": "Ransomware and data extortion",
+      "title": "Exfiltration extortion without visible encryption",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Exfiltration extortion without visible encryption. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-02b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-02b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-02b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-02b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-02b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-02b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-02b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-02b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "02C",
+      "category": "Ransomware and data extortion",
+      "title": "Backup administrator targeted before deployment",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Backup administrator targeted before deployment. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-02c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-02c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-02c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-02c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-02c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-02c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-02c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-02c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "03A",
+      "category": "API attacks and authorization failures",
+      "title": "Customer statements exposed through object authorization failure",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Customer statements exposed through object authorization failure. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "API",
+          "statements07",
+          "authenticated_request",
+          "actor=cust070 token=t707 object=stmt070 owner=cust070 status=200"
+        ],
+        [
+          "08:01",
+          "API",
+          "statements07",
+          "object_access",
+          "actor=cust070 object=stmt071 owner=cust071 status=200 bytes=24000"
+        ],
+        [
+          "08:02",
+          "API",
+          "statements07",
+          "object_access",
+          "actor=cust070 object=stmt072 owner=cust072 status=200 bytes=26000"
+        ],
+        [
+          "08:03",
+          "AppAudit",
+          "statements07",
+          "ownership_check_missing",
+          "route=/v1/statements/{id} build=4.2"
+        ],
+        [
+          "08:04",
+          "WAF",
+          "edge07",
+          "request_rate",
+          "token=t707 requests=420 interval_seconds=60"
+        ],
+        [
+          "08:06",
+          "Storage",
+          "statements07",
+          "object_returned",
+          "request=req707 object=stmt071 bytes=24000"
+        ],
+        [
+          "08:07",
+          "Identity",
+          "cust070",
+          "token_revoked",
+          "token=t707 reason=confirmed abuse"
+        ]
+      ],
+      "source_note": "Evidence is reproduced from the uploaded playbook."
+    },
+    {
+      "id": "03B",
+      "category": "API attacks and authorization failures",
+      "title": "Public URL preview service reaches cloud metadata",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Public URL preview service reaches cloud metadata. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "API",
+          "preview08",
+          "preview_requested",
+          "request=req808 target_class=link_local_metadata"
+        ],
+        [
+          "08:01",
+          "AppAudit",
+          "preview08",
+          "url_filter_bypassed",
+          "request=req808 redirect_count=2 destination_class=internal"
+        ],
+        [
+          "08:02",
+          "Network",
+          "preview08",
+          "internal_fetch",
+          "request=req808 destination_class=metadata bytes=1860"
+        ],
+        [
+          "08:03",
+          "CloudIAM",
+          "role-preview08",
+          "credential_use",
+          "key_id=k808 ip=198.51.100.88 service=objectstore"
+        ],
+        [
+          "08:04",
+          "Storage",
+          "bucket08",
+          "object_download",
+          "key_id=k808 objects=42 bytes=8400000"
+        ],
+        [
+          "08:06",
+          "CloudIAM",
+          "role-preview08",
+          "permission_audit",
+          "policy=read_all_buckets trust=instance"
+        ],
+        [
+          "08:07",
+          "Config",
+          "preview08",
+          "metadata_setting",
+          "session_required=no"
+        ]
+      ],
+      "source_note": "Evidence is reproduced from the uploaded playbook."
+    },
+    {
+      "id": "03C",
+      "category": "API attacks and authorization failures",
+      "title": "Mass assignment changes a customer authorization field",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Mass assignment changes a customer authorization field. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-03c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-03c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-03c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-03c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-03c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-03c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-03c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-03c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "04A",
+      "category": "Distributed denial of service and resource exhaustion",
+      "title": "Application login flood obscured by valid TLS",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Application login flood obscured by valid TLS. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Metrics",
+          "login10",
+          "request_rate",
+          "requests_per_second=18000 baseline=300 error_pct=42"
+        ],
+        [
+          "08:01",
+          "APM",
+          "auth10",
+          "worker_saturation",
+          "pool_used_pct=100 db_wait_ms=2800"
+        ],
+        [
+          "08:02",
+          "WAF",
+          "edge10",
+          "behavior_cluster",
+          "fingerprint=f10 source_count=8400 path=/login"
+        ],
+        [
+          "08:03",
+          "Auth",
+          "login10",
+          "login_failures",
+          "fingerprint=f10 failures=380000 success=12"
+        ],
+        [
+          "08:04",
+          "Network",
+          "edge10",
+          "bandwidth_status",
+          "utilization_pct=28 packet_loss_pct=0"
+        ],
+        [
+          "08:05",
+          "Change",
+          "web10",
+          "approved_campaign",
+          "ticket=CHG010 path=/offers expected_rps=900"
+        ],
+        [
+          "08:07",
+          "Metrics",
+          "login10",
+          "availability_probe",
+          "success_pct=58 region_count=3"
+        ]
+      ],
+      "source_note": "Evidence is reproduced from the uploaded playbook."
+    },
+    {
+      "id": "04B",
+      "category": "Distributed denial of service and resource exhaustion",
+      "title": "Volumetric flood saturates the upstream circuit",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Volumetric flood saturates the upstream circuit. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-04b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-04b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-04b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-04b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-04b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-04b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-04b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-04b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "04C",
+      "category": "Distributed denial of service and resource exhaustion",
+      "title": "Inference API exhaustion and runaway spending",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Inference API exhaustion and runaway spending. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-04c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-04c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-04c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-04c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-04c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-04c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-04c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-04c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "05A",
+      "category": "Employee misuse and insider risk",
+      "title": "Customer export copied to personal cloud storage",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Customer export copied to personal cloud storage. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-05a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-05a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-05a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-05a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-05a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-05a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-05a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-05a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "05B",
+      "category": "Employee misuse and insider risk",
+      "title": "Administrator disables audit before changing payments",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Administrator disables audit before changing payments. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-05b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-05b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-05b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-05b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-05b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-05b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-05b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-05b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "05C",
+      "category": "Employee misuse and insider risk",
+      "title": "Sensitive report sent to an unapproved AI service",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Sensitive report sent to an unapproved AI service. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-05c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-05c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-05c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-05c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-05c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-05c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-05c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-05c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "06A",
+      "category": "Physical intrusion lost devices and removable media",
+      "title": "Lost device or removable media incident",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Lost device or removable media incident. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-06a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-06a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-06a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-06a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-06a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-06a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-06a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-06a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "06B",
+      "category": "Physical intrusion lost devices and removable media",
+      "title": "Lost laptop with recent cloud token activity",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Lost laptop with recent cloud token activity. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-06b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-06b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-06b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-06b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-06b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-06b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-06b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-06b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "06C",
+      "category": "Physical intrusion lost devices and removable media",
+      "title": "Removable media used on an unattended workstation",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Removable media used on an unattended workstation. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-06c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-06c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-06c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-06c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-06c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-06c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-06c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-06c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "07A",
+      "category": "Customer account takeover",
+      "title": "Customer account takeover through suspicious recovery",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Customer account takeover through suspicious recovery. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-07a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-07a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-07a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-07a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-07a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-07a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-07a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-07a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "07B",
+      "category": "Customer account takeover",
+      "title": "SIM change precedes account recovery and transfer",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "SIM change precedes account recovery and transfer. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-07b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-07b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-07b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-07b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-07b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-07b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-07b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-07b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "07C",
+      "category": "Customer account takeover",
+      "title": "Mobile session reused after apparent logout",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Mobile session reused after apparent logout. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-07c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-07c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-07c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-07c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-07c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-07c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-07c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-07c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "08A",
+      "category": "Identity token and privileged access abuse",
+      "title": "Identity token or privileged access abuse",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Identity token or privileged access abuse. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-08a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-08a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-08a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-08a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-08a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-08a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-08a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-08a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "08B",
+      "category": "Identity token and privileged access abuse",
+      "title": "MFA fatigue followed by an unauthorized factor",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "MFA fatigue followed by an unauthorized factor. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-08b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-08b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-08b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-08b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-08b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-08b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-08b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-08b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "08C",
+      "category": "Identity token and privileged access abuse",
+      "title": "Service principal credential exposed in a repository",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Service principal credential exposed in a repository. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-08c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-08c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-08c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-08c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-08c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-08c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-08c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-08c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "09A",
+      "category": "Third party and service provider compromise",
+      "title": "Third party or service provider compromise",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Third party or service provider compromise. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-09a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-09a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-09a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-09a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-09a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-09a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-09a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-09a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "09B",
+      "category": "Third party and service provider compromise",
+      "title": "Partner VPN account crosses an unintended trust boundary",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Partner VPN account crosses an unintended trust boundary. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-09b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-09b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-09b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-09b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-09b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-09b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-09b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-09b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "09C",
+      "category": "Third party and service provider compromise",
+      "title": "SaaS provider incident affects an enterprise connector",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "SaaS provider incident affects an enterprise connector. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-09c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-09c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-09c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-09c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-09c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-09c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-09c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-09c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "10A",
+      "category": "Internet facing gateway and server compromise",
+      "title": "Internet gateway compromise with internal scanning",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Internet gateway compromise with internal scanning. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-10a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-10a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-10a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-10a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-10a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-10a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-10a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-10a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "10B",
+      "category": "Internet facing gateway and server compromise",
+      "title": "Web server process writes a command execution artefact",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Web server process writes a command execution artefact. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-10b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-10b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-10b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-10b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-10b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-10b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-10b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-10b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "10C",
+      "category": "Internet facing gateway and server compromise",
+      "title": "Exposed administration console changes firewall policy",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Exposed administration console changes firewall policy. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-10c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-10c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-10c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-10c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-10c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-10c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-10c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-10c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "11A",
+      "category": "Cyber physical and operational technology compromise",
+      "title": "Cyber physical or operational technology compromise",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Cyber physical or operational technology compromise. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-11a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-11a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-11a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-11a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-11a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-11a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-11a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-11a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "11B",
+      "category": "Cyber physical and operational technology compromise",
+      "title": "Operational sensor spoofing creates misleading dashboard",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Operational sensor spoofing creates misleading dashboard. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-11b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-11b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-11b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-11b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-11b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-11b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-11b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-11b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "11C",
+      "category": "Cyber physical and operational technology compromise",
+      "title": "Connected access controller issues unexplained door unlocks",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Connected access controller issues unexplained door unlocks. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-11c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-11c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-11c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-11c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-11c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-11c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-11c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-11c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "12A",
+      "category": "Quantum related cryptographic exposure",
+      "title": "Long lived encrypted archives stolen from storage",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Long lived encrypted archives stolen from storage. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Storage",
+          "archive34",
+          "object_download",
+          "key_id=k3434 objects=180 bytes=2400000000"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "archive-reader34",
+          "credential_use",
+          "key_id=k3434 ip=198.51.100.134"
+        ],
+        [
+          "08:02",
+          "CryptoInventory",
+          "archive34",
+          "crypto_profile",
+          "data_cipher=AES256-GCM key_wrap=RSA2048 envelope=v1"
+        ],
+        [
+          "08:03",
+          "DataCatalog",
+          "archive34",
+          "secrecy_lifetime",
+          "remaining_years=20 classification=restricted"
+        ],
+        [
+          "08:04",
+          "Vault",
+          "archive34",
+          "private_key_audit",
+          "key_export=none key_access=under_review"
+        ],
+        [
+          "08:06",
+          "Network",
+          "archive34",
+          "transfer_confirmed",
+          "key_id=k3434 bytes=2400000000"
+        ],
+        [
+          "08:07",
+          "ThreatReport",
+          "IR034",
+          "quantum_claim",
+          "claim=already_decrypted independent_validation=none"
+        ]
+      ],
+      "source_note": "Evidence is reproduced from the uploaded playbook."
+    },
+    {
+      "id": "12B",
+      "category": "Quantum related cryptographic exposure",
+      "title": "Unauthorized cryptographic downgrade during migration",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Unauthorized cryptographic downgrade during migration. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-12b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-12b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-12b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-12b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-12b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-12b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-12b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-12b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "12C",
+      "category": "Quantum related cryptographic exposure",
+      "title": "Unapproved quantum security component enters a signing service",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Unapproved quantum security component enters a signing service. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-12c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-12c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-12c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-12c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-12c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-12c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-12c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-12c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "13A",
+      "category": "AI infrastructure and model platform compromise",
+      "title": "AI infrastructure or model platform compromise",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "AI infrastructure or model platform compromise. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-13a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-13a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-13a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-13a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-13a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-13a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-13a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-13a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "13B",
+      "category": "AI infrastructure and model platform compromise",
+      "title": "GPU worker workload uses an unauthorized mining pool",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "GPU worker workload uses an unauthorized mining pool. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-13b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-13b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-13b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-13b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-13b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-13b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-13b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-13b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "13C",
+      "category": "AI infrastructure and model platform compromise",
+      "title": "Model registry overwrite changes production predictions",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Model registry overwrite changes production predictions. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-13c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-13c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-13c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-13c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-13c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-13c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-13c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-13c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "14A",
+      "category": "Software build dependency and update compromise",
+      "title": "Build dependency introduces an unauthorized outbound process",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Build dependency introduces an unauthorized outbound process. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-14a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-14a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-14a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-14a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-14a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-14a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-14a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-14a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "14B",
+      "category": "Software build dependency and update compromise",
+      "title": "CI workflow change bypasses release review",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "CI workflow change bypasses release review. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-14b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-14b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-14b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-14b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-14b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-14b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-14b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-14b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "14C",
+      "category": "Software build dependency and update compromise",
+      "title": "Vendor update package carries an unexpected component",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Vendor update package carries an unexpected component. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-14c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-14c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-14c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-14c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-14c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-14c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-14c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-14c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "15A",
+      "category": "Deepfake and executive impersonation incidents",
+      "title": "Executive impersonation triggers a sensitive request",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Executive impersonation triggers a sensitive request. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-15a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-15a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-15a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-15a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-15a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-15a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-15a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-15a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "15B",
+      "category": "Deepfake and executive impersonation incidents",
+      "title": "Video identity check used to request a privileged reset",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Video identity check used to request a privileged reset. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-15b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-15b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-15b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-15b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-15b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-15b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-15b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-15b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "15C",
+      "category": "Deepfake and executive impersonation incidents",
+      "title": "Fabricated public statement triggers customer concern",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Fabricated public statement triggers customer concern. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-15c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-15c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-15c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-15c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-15c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-15c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-15c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-15c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "16A",
+      "category": "AI application and retrieval compromise",
+      "title": "AI application or retrieval compromise",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "AI application or retrieval compromise. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-16a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-16a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-16a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-16a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-16a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-16a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-16a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-16a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "16B",
+      "category": "AI application and retrieval compromise",
+      "title": "Poisoned retrieval content changes operational advice",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Poisoned retrieval content changes operational advice. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-16b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-16b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-16b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-16b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-16b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-16b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-16b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-16b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "16C",
+      "category": "AI application and retrieval compromise",
+      "title": "Assistant output passed unsafely into an automation script",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Assistant output passed unsafely into an automation script. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-16c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-16c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-16c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-16c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-16c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-16c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-16c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-16c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "17A",
+      "category": "Prompt injection and untrusted content instructions",
+      "title": "Prompt injection or untrusted content instruction",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Prompt injection or untrusted content instruction. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-17a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-17a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-17a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-17a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-17a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-17a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-17a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-17a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "17B",
+      "category": "Prompt injection and untrusted content instructions",
+      "title": "Direct instruction tries to export restricted customer records",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Direct instruction tries to export restricted customer records. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-17b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-17b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-17b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-17b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-17b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-17b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-17b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-17b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "17C",
+      "category": "Prompt injection and untrusted content instructions",
+      "title": "Image content contaminates an invoice review assistant",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Image content contaminates an invoice review assistant. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-17c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-17c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-17c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-17c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-17c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-17c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-17c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-17c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "18A",
+      "category": "AI augmented phishing malware and adaptive campaigns",
+      "title": "AI augmented phishing or adaptive campaign",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "AI augmented phishing or adaptive campaign. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-18a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-18a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-18a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-18a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-18a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-18a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-18a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-18a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "18B",
+      "category": "AI augmented phishing malware and adaptive campaigns",
+      "title": "Personalized multilingual phishing campaign targets staff",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Personalized multilingual phishing campaign targets staff. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-18b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-18b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-18b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-18b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-18b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-18b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-18b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-18b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "18C",
+      "category": "AI augmented phishing malware and adaptive campaigns",
+      "title": "Automated attack chain rotates infrastructure after each block",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Automated attack chain rotates infrastructure after each block. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-18c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-18c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-18c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-18c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-18c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-18c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-18c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-18c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "19A",
+      "category": "Agentic automation and multiagent hijack",
+      "title": "Agentic automation or multiagent hijack",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Agentic automation or multiagent hijack. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-19a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-19a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-19a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-19a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-19a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-19a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-19a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-19a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "19B",
+      "category": "Agentic automation and multiagent hijack",
+      "title": "Forged agent message passes excessive authority to a worker",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Forged agent message passes excessive authority to a worker. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-19b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-19b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-19b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-19b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-19b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-19b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-19b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-19b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "19C",
+      "category": "Agentic automation and multiagent hijack",
+      "title": "Stolen connector token keeps a paused agent active",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Stolen connector token keeps a paused agent active. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-19c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-19c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-19c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-19c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-19c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-19c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-19c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-19c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "20A",
+      "category": "Suspected nation state and persistent targeted intrusion",
+      "title": "Suspected persistent targeted intrusion",
+      "priority": "P1",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Suspected persistent targeted intrusion. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-20a",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-20a",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-20a",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-20a",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-20a",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-20a",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-20a",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-20a",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "20B",
+      "category": "Suspected nation state and persistent targeted intrusion",
+      "title": "Trusted administration tools used for quiet lateral movement",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Trusted administration tools used for quiet lateral movement. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-20b",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-20b",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-20b",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-20b",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-20b",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-20b",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-20b",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-20b",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    },
+    {
+      "id": "20C",
+      "category": "Suspected nation state and persistent targeted intrusion",
+      "title": "Destructive operation coincides with customer disruption",
+      "priority": "P2",
+      "lead": "Incident commander with relevant service owner",
+      "description": "Destructive operation coincides with customer disruption. All telemetry is simulated for training.",
+      "evidence": [
+        [
+          "08:00",
+          "Telemetry",
+          "asset-20c",
+          "alert_raised",
+          "Synthetic lab event, validate source and timestamp"
+        ],
+        [
+          "08:01",
+          "Identity",
+          "principal-20c",
+          "identity_activity",
+          "Compare actor, device, session and expected baseline"
+        ],
+        [
+          "08:02",
+          "Application",
+          "service-20c",
+          "suspicious_operation",
+          "Preserve request or transaction identifiers"
+        ],
+        [
+          "08:03",
+          "Audit",
+          "control-20c",
+          "control_gap",
+          "Check approved change, ownership and logging coverage"
+        ],
+        [
+          "08:04",
+          "Network",
+          "segment-20c",
+          "network_observation",
+          "Confirm destination, direction, volume and control state"
+        ],
+        [
+          "08:05",
+          "Change",
+          "change-20c",
+          "approved_activity",
+          "Validate scope and ticket before excluding as benign"
+        ],
+        [
+          "08:06",
+          "Business",
+          "case-20c",
+          "impact_check",
+          "Confirm customer, data, operational or financial impact"
+        ],
+        [
+          "08:07",
+          "Response",
+          "case-20c",
+          "containment_status",
+          "Verify enforcement with a resource-level test"
+        ]
+      ],
+      "source_note": "Evidence is a clearly labeled synthetic starter set. Replace or extend it with the scenario's full playbook telemetry before claiming it is source-exact."
+    }
+  ]
+}
