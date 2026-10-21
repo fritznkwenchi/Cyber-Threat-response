@@ -22,11 +22,11 @@ const rubricItems = [
 ["Recovery proof","Test that old access fails, controls persist, and legitimate workflows still succeed. Keep test output and timestamps."],
 ["Communication and improvement","Give concise updates, assign named owners to gaps, and propose a tested detection or preventive control."]
 ];
-let catalog=[], current=null, records={}, dispositions={};
+let catalog=[], current=null, records={}, dispositions={}, eventDetails={};
 const storageKey="cyber-ir-lab-v1";
 async function init(){
  try{const r=await fetch("scenarios.json");catalog=(await r.json()).scenarios;}catch(e){catalog=embeddedFallback();}
- const saved=localStorage.getItem(storageKey);if(saved){try{const parsed=JSON.parse(saved);records=parsed.records||{};dispositions=parsed.dispositions||{};}catch{}}
+ const saved=localStorage.getItem(storageKey);if(saved){try{const parsed=JSON.parse(saved);records=parsed.records||{};dispositions=parsed.dispositions||{};eventDetails=parsed.eventDetails||{};}catch{}}
  $("#scenarioCount").textContent=catalog.length;
  const domains=[...new Set(catalog.map(s=>s.category))];
  $("#domainFilter").innerHTML='<option value="">All domains</option>'+domains.map(d=>`<option>${esc(d)}</option>`).join("");
@@ -51,8 +51,22 @@ function selectScenario(id){
  $("#missionList").innerHTML=mission.map(x=>`<li>${esc(x)}</li>`).join("");
  $("#evidenceRows").innerHTML=current.evidence.map((e,i)=>{
  const key=current.id+":"+i, val=dispositions[key]||"unknown";
- return `<tr><td>${esc(e[0])}</td><td>${esc(e[1])}</td><td>${esc(e[2])}</td><td><code>${esc(e[3])}</code></td><td>${esc(e[4])}</td><td><div class="disposition">${["confirmed","benign","unknown"].map(v=>`<button class="${v===val?'selected':''}" data-value="${v}" data-index="${i}">${v==="confirmed"?"Relevant":v==="benign"?"Benign":"Unknown"}</button>`).join("")}</div></td></tr>`;
+ const base=e[5]||{};
+ const saved=eventDetails[key]||{};
+ const fields=[
+  ["host_name","Host name"],["user","User"],["parent_process","Parent process"],["child_process","Child process"],
+  ["file_hash","File hash"],["edr_action","EDR action"],["ip_domain","IP / Domain"]
+ ];
+ const detailFields=fields.map(([name,label])=>`<label class="entity-event-field"><span>${label}</span><input type="text" data-event-field="${name}" data-index="${i}" value="${esc(saved[name]!==undefined?saved[name]:(base[name]||""))}" placeholder="Not recorded in source"></label>`).join("");
+ const decisionLabel=val==="confirmed"?"Relevant":val==="benign"?"Benign":"Unknown";
+ return `<tr><td>${esc(e[0])}</td><td>${esc(e[1])}</td><td>${esc(e[2])}</td><td><code>${esc(e[3])}</code></td><td>${esc(e[4])}</td><td><div class="disposition">${["confirmed","benign","unknown"].map(v=>`<button class="${v===val?'selected':''}" data-value="${v}" data-index="${i}">${v==="confirmed"?"Relevant":v==="benign"?"Benign":"Unknown"}</button>`).join("")}</div><small class="decision-label">Decision: ${decisionLabel}</small></td></tr><tr class="entity-event-row"><td colspan="6"><details><summary>Entity event fields</summary><div class="entity-event-grid">${detailFields}<div class="entity-event-field entity-decision"><span>Decision</span><strong>${decisionLabel}</strong><small>Set using the decision buttons above.</small></div></div></details></td></tr>`;
  }).join("");
+ $("#evidenceRows [data-event-field]").forEach(input=>input.addEventListener("change",()=>{
+   const key=current.id+":"+input.dataset.index;
+   const values=eventDetails[key]||{};
+   values[input.dataset.eventField]=input.value;
+   eventDetails[key]=values;persist();
+ }));
  $("#sourceNote").textContent=current.source_note;
  $$(".disposition button").forEach(b=>b.addEventListener("click",()=>{
    dispositions[current.id+":"+b.dataset.index]=b.dataset.value;persist();selectScenario(current.id);
@@ -109,7 +123,7 @@ function captureWorksheet(){
  r.checks=$$("[data-check]:checked").map(el=>Number(el.dataset.check));
  records[current.id]=r;updateStatus();
 }
-function persist(){if(current)captureWorksheet();localStorage.setItem(storageKey,JSON.stringify({records,dispositions}));updateStatus();}
+function persist(){if(current)captureWorksheet();localStorage.setItem(storageKey,JSON.stringify({records,dispositions,eventDetails}));updateStatus();}
 function updateStatus(){
  $("#savedStatus").textContent=Object.keys(records).length+" saved";
 }
@@ -127,7 +141,7 @@ function exportReport(){
   lab:"Cyber Incident Response Simulator",
   scenario:{id:current.id,title:current.title,domain:current.category,initial_priority:current.priority,response_plan:current.response_plan},
   exported_at:new Date().toISOString(),
-  evidence_dispositions:current.evidence.map((e,i)=>({time_central:e[0],source:e[1],entity:e[2],event:e[3],observation:e[4],disposition:dispositions[current.id+":"+i]||"unknown"})),
+  evidence_dispositions:current.evidence.map((e,i)=>({time_central:e[0],source:e[1],entity:e[2],event:e[3],observation:e[4],entity_event_fields:{...(e[5]||{}),...(eventDetails[current.id+":"+i]||{})},decision:dispositions[current.id+":"+i]||"unknown"})),
   worksheet:r,
   note:"Synthetic training material. Validate against the source playbook before using as operational guidance."
  };
@@ -138,6 +152,6 @@ $("#search").addEventListener("input",renderList);
 $("#domainFilter").addEventListener("change",renderList);
 $$(".tab").forEach(b=>b.addEventListener("click",()=>{$$(".tab").forEach(x=>x.classList.toggle("active",x===b));$$(".tab-panel").forEach(p=>p.classList.toggle("active",p.id==="panel-"+b.dataset.tab));}));
 $("#saveBtn").addEventListener("click",()=>{persist();$("#saveMessage").textContent="Saved locally.";setTimeout(()=>$("#saveMessage").textContent="",2200);});
-$("#clearBtn").addEventListener("click",()=>{if(!confirm("Clear worksheet and evidence dispositions for "+current.id+"?"))return;delete records[current.id];current.evidence.forEach((e,i)=>delete dispositions[current.id+":"+i]);persist();selectScenario(current.id);$("#saveMessage").textContent="Scenario worksheet cleared.";});
+$("#clearBtn").addEventListener("click",()=>{if(!confirm("Clear worksheet and evidence dispositions for "+current.id+"?"))return;delete records[current.id];current.evidence.forEach((e,i)=>{delete dispositions[current.id+":"+i];delete eventDetails[current.id+":"+i];});persist();selectScenario(current.id);$("#saveMessage").textContent="Scenario worksheet cleared.";});
 $("#exportBtn").addEventListener("click",exportReport);
 init();
