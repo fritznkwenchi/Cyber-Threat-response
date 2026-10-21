@@ -8,6 +8,8 @@ A local, browser-based interview practice lab built from **The Evolving Cyber Th
 - Search and filter by scenario or domain.
 - A synthetic evidence timeline with analyst disposition controls.
 - Scenario-specific industry response playbooks for all 60 scenarios, with triage, investigation, containment, eradication, recovery, and closure steps.
+- Cross-tool workflow for all 60 scenarios mapping Proofpoint, CrowdStrike Falcon, ExtraHop, and ServiceNow to investigation, correlation keys, response actions, ticket fields, verification criteria, and safety guardrails.
+- Tool guidance is a simulated analyst workflow, not a live integration or a claim that any product action was executed.
 - Source reference links, response assumptions, bounded findings, evidence gaps, and verification targets where supplied by the playbook.
 - Incident worksheet for severity, assets, evidence correlation, containment, gaps, recovery proof, and executive updates.
 - Response phase checklist.
@@ -73,3 +75,8 @@ The scenario names for A variants follow the playbook's scenario index and are s
 ## License
 
 Add a license appropriate for your intended use. The uploaded playbook's copyright and reuse terms remain separate from this simulator.
+
+
+## Cross-tool workflow
+
+Open any scenario and select **Industry response**. The cross-tool section appears first and explains what to examine in Proofpoint, CrowdStrike Falcon, ExtraHop, and ServiceNow, what stable identifiers to correlate, how to record the incident, and what evidence is required to verify resolution. Product menus and telemetry depend on tenant licensing and configuration. Use read-only investigation first where feasible, obtain approval for disruptive actions, and never paste secrets into ServiceNow. All lab events are synthetic.
