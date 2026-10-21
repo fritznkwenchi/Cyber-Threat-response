@@ -80,3 +80,8 @@ Add a license appropriate for your intended use. The uploaded playbook's copyrig
 ## Cross-tool workflow
 
 Open any scenario and select **Industry response**. The cross-tool section appears first and explains what to examine in Proofpoint, CrowdStrike Falcon, ExtraHop, and ServiceNow, what stable identifiers to correlate, how to record the incident, and what evidence is required to verify resolution. Product menus and telemetry depend on tenant licensing and configuration. Use read-only investigation first where feasible, obtain approval for disruptive actions, and never paste secrets into ServiceNow. All lab events are synthetic.
+
+
+## Simulator time zone
+
+The synthetic scenario timeline is displayed as Central Time for interview practice. The simulator uses time-only scenario values, so these are treated as local Central wall-clock times rather than converted from UTC. For real incidents, preserve the original timestamp and timezone, then normalize timestamps consistently for correlation. Central Time observes CST (UTC−06:00) in winter and CDT (UTC−05:00) during daylight saving time; the IANA zone is America/Chicago.
