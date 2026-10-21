@@ -7,6 +7,8 @@ A local, browser-based interview practice lab built from **The Evolving Cyber Th
 - 60 scenario entries across 20 domains, with A/B/C variants.
 - Search and filter by scenario or domain.
 - A synthetic evidence timeline with analyst disposition controls.
+- Scenario-specific industry response playbooks for all 60 scenarios, with triage, investigation, containment, eradication, recovery, and closure steps.
+- Source reference links, response assumptions, bounded findings, evidence gaps, and verification targets where supplied by the playbook.
 - Incident worksheet for severity, assets, evidence correlation, containment, gaps, recovery proof, and executive updates.
 - Response phase checklist.
 - Interviewer rubric and evidence-quality self-check.
@@ -44,7 +46,7 @@ You may also open `index.html` directly in a modern browser, though some browser
 
 ## Data provenance and important limitations
 
-The playbook says its telemetry is simulated. This lab preserves the scenario-domain organization and includes source-derived starter evidence for selected scenarios (including 01A, 01B, 01C, 02A, 03A, 03B, 04A, and 12A). The other scenario entries contain clearly labeled synthetic starter evidence, not a verbatim extraction of every playbook event. Review and replace those starter events against the corresponding playbook pages before presenting them as source-exact.
+The playbook says its telemetry is simulated. This lab preserves the scenario-domain organization and includes source-derived starter evidence for selected scenarios (including 01A, 01B, 01C, 02A, 03A, 03B, 04A, and 12A). The other scenario entries contain clearly labeled synthetic starter evidence, not a verbatim extraction of every playbook event. Review and replace those starter events against the corresponding playbook pages before presenting them as source-exact. The Industry response tab uses the shared response procedure for each A variant and scenario-specific adaptations for B/C variants, combined with the relevant domain activation and closure steps. It includes the playbook's cited reference links and verification targets when available. These are training recommendations, not a replacement for your organization's incident response plan or legal, safety, and change-control requirements.
 
 The scenario names for A variants follow the playbook's scenario index and are shortened in a few places for readability. The app is a portfolio training aid, not a production incident response platform or an authoritative replacement for your organization's procedures.
 

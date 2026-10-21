@@ -57,8 +57,27 @@ function selectScenario(id){
  $$(".disposition button").forEach(b=>b.addEventListener("click",()=>{
    dispositions[current.id+":"+b.dataset.index]=b.dataset.value;persist();selectScenario(current.id);
  }));
- loadWorksheet();renderList();
+ renderResponsePlan(current);loadWorksheet();renderList();
 }
+function renderResponsePlan(s){
+ const p=s.response_plan||{};
+ const phaseHtml=(p.phases||[]).map((phase,i)=>`<article class="response-card"><div class="response-card-head"><span class="response-index">${String(i+1).padStart(2,"0")}</span><h4>${esc(phase.phase)}</h4></div><ol>${(phase.steps||[]).map(step=>`<li>${esc(step)}</li>`).join("")}</ol></article>`).join("");
+ const notes=(p.scenario_notes||[]).map(n=>`<article class="response-note"><strong>${esc(n.label)}</strong><p>${esc(n.text)}</p></article>`).join("");
+ const verification=(p.verification_targets||[]).map(v=>`<tr><td>${esc(v.control)}</td><td>${esc(v.expected_result)}</td><td>${esc(v.evidence_to_retain)}</td></tr>`).join("");
+ const references=(p.references||[]).map(r=>`<li><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer"><strong>${esc(r.id)}</strong> · ${esc(r.title)}</a></li>`).join("");
+ const assumption=p.response_assumption?`<article class="response-note"><strong>Scenario response assumption</strong><p>${esc(p.response_assumption)}</p></article>`:"";
+ const priority=p.priority_guidance?`<article class="response-note"><strong>Initial priority / escalation guidance</strong><p>${esc(p.priority_guidance)}</p></article>`:"";
+ const responseLead=p.response_lead?`<article class="response-note"><strong>Response lead</strong><p>${esc(p.response_lead)}</p></article>`:"";
+ const bounded=p.bounded_finding?`<article class="response-note"><strong>Bounded finding from the playbook</strong><p>${esc(p.bounded_finding)}</p></article>`:"";
+ $("#responsePlan").innerHTML=`<div class="source-banner"><strong>${esc(p.source_label||"Response guidance")}</strong><p>${esc(p.basis||"Review the response phases below.")}</p><p class="muted">${esc(p.disclaimer||"Training use only.")}</p></div><div class="response-context">${priority}${responseLead}${assumption}${notes}${bounded}</div><div class="response-phase-grid">${phaseHtml}</div>${verification?`<article class="panel verification-panel"><h3>Scenario verification targets</h3><p class="muted">Use these targets to prove that containment and recovery worked, rather than relying only on a console status.</p><div class="table-wrap"><table><thead><tr><th>Control</th><th>Expected result</th><th>Evidence to retain</th></tr></thead><tbody>${verification}</tbody></table></div></article>`:""}${references?`<article class="panel reference-panel"><h3>Industry references cited by the playbook</h3><ul>${references}</ul></article>`:""}<div class="button-row"><button id="copyResponseBtn" class="secondary">Copy response steps</button><span id="copyResponseStatus" aria-live="polite"></span></div>`;
+ const copyBtn=$("#copyResponseBtn");
+ if(copyBtn)copyBtn.addEventListener("click",()=>{
+   const plain=`${s.id} — ${s.title}\n\n`+(p.phases||[]).map((phase,i)=>`${i+1}. ${phase.phase}\n${(phase.steps||[]).map(step=>`- ${step}`).join("\n")}`).join("\n\n")+`\n\n${(p.scenario_notes||[]).map(n=>`${n.label}: ${n.text}`).join("\n")}`;
+   const status=$("#copyResponseStatus");
+   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(plain).then(()=>status.textContent="Copied response steps.").catch(()=>fallbackCopy(plain,status));}else fallbackCopy(plain,status);
+ });
+}
+function fallbackCopy(text,status){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");status.textContent="Response steps copied.";}catch(e){status.textContent="Copy unavailable in this browser. Select and copy the steps manually.";}ta.remove();}
 function defaultRecord(){return {summary:"",severity:"",assets:"",correlations:"",containment:"",gaps:"",recovery:"",update:"",checks:[]};}
 function loadWorksheet(){
  const r=records[current.id]||defaultRecord();
@@ -100,7 +119,7 @@ function exportReport(){
  const r=records[current.id]||defaultRecord();
  const report={
   lab:"Cyber Incident Response Simulator",
-  scenario:{id:current.id,title:current.title,domain:current.category,initial_priority:current.priority},
+  scenario:{id:current.id,title:current.title,domain:current.category,initial_priority:current.priority,response_plan:current.response_plan},
   exported_at:new Date().toISOString(),
   evidence_dispositions:current.evidence.map((e,i)=>({time_utc:e[0],source:e[1],entity:e[2],event:e[3],observation:e[4],disposition:dispositions[current.id+":"+i]||"unknown"})),
   worksheet:r,

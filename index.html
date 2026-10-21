@@ -30,7 +30,7 @@
     <div class="priority-pill" id="priorityPill">P1</div>
   </div>
   <div class="tabs" role="tablist">
-    <button class="tab active" data-tab="brief">Brief & evidence</button><button class="tab" data-tab="response">Response worksheet</button><button class="tab" data-tab="review">Interviewer review</button>
+    <button class="tab active" data-tab="brief">Brief & evidence</button><button class="tab" data-tab="playbook">Industry response</button><button class="tab" data-tab="response">Response worksheet</button><button class="tab" data-tab="review">Interviewer review</button>
   </div>
   <section class="tab-panel active" id="panel-brief">
     <div class="two-col">
@@ -45,6 +45,10 @@
       <div class="table-wrap"><table><thead><tr><th>UTC</th><th>Source</th><th>Entity</th><th>Event</th><th>Observation</th><th>Disposition</th></tr></thead><tbody id="evidenceRows"></tbody></table></div>
       <p id="sourceNote" class="source-note"></p>
     </article>
+  </section>
+  <section class="tab-panel" id="panel-playbook">
+    <div class="review-intro"><p class="eyebrow">RESOLUTION PLAYBOOK</p><h3>Industry-aligned response steps</h3><p>Use these steps to investigate, contain, eradicate, recover, and explain your decisions. Guidance is drawn from the supplied playbook. Follow your organization's authority, safety, legal, and service-restoration requirements in real incidents.</p></div>
+    <div id="responsePlan"></div>
   </section>
   <section class="tab-panel" id="panel-response">
     <div class="phase-banner"><span class="phase-number">01</span><div><h3>Build your incident record</h3><p>Write as if another responder must take over your case without a verbal handoff.</p></div></div>
